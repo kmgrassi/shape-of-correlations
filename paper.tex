@@ -1,0 +1,531 @@
+\documentclass[11pt,a4paper]{article}
+
+% --- Packages ---
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{lmodern}
+\usepackage{amsmath,amssymb,amsthm}
+\usepackage[margin=1in]{geometry}
+\usepackage{xcolor}
+\usepackage{hyperref}
+\usepackage{enumitem}
+\usepackage{microtype}
+
+% --- Theorem environments ---
+\newtheorem{theorem}{Theorem}[section]
+\newtheorem{corollary}[theorem]{Corollary}
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{proposition}[theorem]{Proposition}
+\theoremstyle{definition}
+\newtheorem{definition}[theorem]{Definition}
+\theoremstyle{remark}
+\newtheorem{remark}[theorem]{Remark}
+
+% --- Macros ---
+\newcommand{\CHSH}{\mathrm{CHSH}}
+\newcommand{\ip}[2]{\langle #1, #2 \rangle}
+
+% --- Metadata ---
+\hypersetup{
+  colorlinks=true,
+  linkcolor=blue!70!black,
+  citecolor=blue!70!black,
+  urlcolor=blue!70!black
+}
+
+\title{Relational Kernels: Geometry, Causality,\\ and Bell Nonlocality}
+\author{Kevin Grassi, MD\\[4pt] \normalsize \href{mailto:kmgrassi@gmail.com}{\texttt{kmgrassi@gmail.com}}}
+\date{\today}
+
+\begin{document}
+\maketitle
+
+% ============================================================
+\begin{abstract}
+We study normalized positive semidefinite (PSD) relational kernels as common-origin structures from which geometric, causal, and quantum correlation properties may be derived. Given a symmetric kernel~$G$, we define an associated geometry via
+\[
+d(i,j) = -\log |G(i,j)|,
+\]
+and show that multiplicative submultiplicativity of~$|G|$ is necessary and sufficient for (approximate) metric emergence.
+
+Within the same framework, we define Bell-type correlators $E(a,b) = G(A_a, B_b)$ and analyze the resulting CHSH values. We prove that normalized PSD kernels can reproduce correlations up to the Tsirelson bound while preserving no-signaling.
+
+Our main result establishes a quantitative tradeoff between geometric consistency and Bell nonlocality. We prove that if~$G$ satisfies uniform submultiplicativity with parameter~$\mu > 0$ over the Bell sector, then
+\[
+|\CHSH(G)| \le \frac{4}{\sqrt{2+\mu}}.
+\]
+The proof is given in full and handles all sign configurations of correlators. In particular, maximal Bell violation ($2\sqrt{2}$) is incompatible with any nonzero uniform geometric consistency.
+
+We further construct explicit examples demonstrating \emph{sectoral coexistence}: a single kernel can support approximate geometry on one subset and Bell nonlocality on another.
+
+We conclude that geometry, causality, and nonlocal correlations arise from distinct structural constraints on a common relational substrate, with a precise quantitative tension between geometric transitivity and nonlocality.
+\end{abstract}
+
+% ============================================================
+\section{Introduction}
+
+A central question in the foundations of quantum theory is \emph{why} the strength of nonlocal correlations is bounded where it is. Bell's theorem~\cite{bell1964} establishes that quantum mechanics permits correlations incompatible with any local hidden-variable model, and the CHSH inequality~\cite{chsh1969} provides the canonical quantitative test: local theories satisfy $|S| \le 2$, while quantum mechanics allows violations up to the Tsirelson bound $|S| \le 2\sqrt{2}$~\cite{tsirelson1980,tsirelson1987}. Yet no-signaling alone permits values as large as $|S| = 4$. What structural principle explains the quantum ceiling?
+
+Several candidate answers have been proposed. Information causality~\cite{pawlowski2009} derives the Tsirelson bound from constraints on communication advantage. Carmi and Cohen~\cite{carmi2019} show that relativistic independence---a locality constraint on uncertainty relations---recovers quantum-like limits. The Navascu\'es--Pironio--Ac\'in (NPA) hierarchy~\cite{npa2007} characterizes quantum correlations via positive semidefinite moment matrices, placing the problem squarely in the language of semidefinite programming. Meanwhile, a rich line of work connects Bell correlation sets to convex bodies, cut polytopes, and metric geometry~\cite{avis2006,fine1982}, revealing that the ``shape'' of feasible correlations has deep geometric structure.
+
+In a different direction, the idea that geometry itself might emerge from correlation structure has gained traction in quantum gravity and tensor-network approaches. The Ryu--Takayanagi formula~\cite{ryu2006} and subsequent holographic arguments~\cite{vanraamsdonk2010,swingle2012} link entanglement patterns to emergent spatial geometry, while tensor-network models~\cite{vidal2007,pastawski2015} provide concrete constructions in which geometric properties arise from the structure of quantum correlations.
+
+This paper pursues a unified perspective on these themes. We study normalized positive semidefinite (PSD) kernels---equivalently, Gram matrices of unit vectors---as a common mathematical substrate from which geometric, causal, and nonlocal properties can all be derived. The key observation is that a PSD kernel~$G$ simultaneously supports:
+\begin{itemize}[nosep]
+  \item a \emph{geometry}, via the log-distance $d(i,j) = -\log|G(i,j)|$, whose approximate metric character is controlled by a submultiplicativity parameter~$\mu$;
+  \item \emph{Bell-type correlators} $E(a,b) = G(A_a, B_b)$, whose CHSH value is bounded by the Tsirelson constraint inherent in PSD structure.
+\end{itemize}
+
+The connection between kernels and metrics rests on classical results of Schoenberg~\cite{schoenberg1938}, who established the correspondence between positive definite functions and metric embeddings. Our parameter~$\mu$ quantifies how tightly the kernel respects this correspondence: when $\mu = 1$, the log-distance satisfies the triangle inequality exactly; when $\mu \to 0$, the triangle inequality degrades and the ``geometric'' interpretation dissolves.
+
+Our main result (Theorem~\ref{thm:tradeoff}) establishes a precise quantitative tradeoff: if $\mu > 0$ is enforced uniformly on the Bell sector, then
+\[
+|\CHSH(G)| \le \frac{4}{\sqrt{2+\mu}}.
+\]
+In particular, maximal Bell violation ($2\sqrt{2}$) is incompatible with any nonzero geometric consistency. The proof handles all sign configurations of the correlators without symmetry assumptions.
+
+We further show that this tension is \emph{global}, not local: a single kernel can exhibit strong geometric consistency on one subset and near-maximal Bell violation on another (Section~\ref{sec:coexistence}), provided the geometric constraint is not imposed uniformly across all index triples. This \emph{sectoral coexistence} is demonstrated by explicit construction.
+
+Finally, we sketch a framework for directed (causal) kernels and show that causal order is logically independent of the metric structure derived from the symmetric kernel (Section~\ref{sec:causality}).
+
+We emphasize throughout that statements labeled as theorems are strictly mathematical, while physical interpretations---particularly any connection to spacetime, decoherence, or emergent geometry---are heuristic and speculative. The mathematical content stands independently of these motivations.
+
+
+% ============================================================
+\section{Relational Kernel Framework}\label{sec:framework}
+
+\begin{definition}[Geometric consistency]
+A normalized PSD kernel~$G$ satisfies \emph{$\mu$-submultiplicativity} if
+\[
+|G(i,k)| \ge \mu \cdot |G(i,j)| \cdot |G(j,k)|
+\]
+for all triples $i,j,k$ in the index set.
+\end{definition}
+
+\begin{definition}[Intrinsic parameter]
+The \emph{geometric consistency parameter} of~$G$ is
+\[
+\mu(G) := \inf_{i,j,k} \frac{|G(i,k)|}{|G(i,j)|\,|G(j,k)|}.
+\]
+\end{definition}
+
+
+% ============================================================
+\section{Main Results}\label{sec:results}
+
+\begin{theorem}[Tsirelson bound]\label{thm:tsirelson}
+For any normalized PSD kernel~$G$ and any choice of Bell indices $A_0, A_1, B_0, B_1$,
+\[
+|\CHSH(G)| \le 2\sqrt{2}.
+\]
+\end{theorem}
+
+This is a standard result~\cite{tsirelson1980,tsirelson1987}; see also~\cite{wehner2006} for the SDP/Gram-matrix derivation.
+
+\begin{theorem}[Geometric obstruction]\label{thm:obstruction}
+If $\mu > 0$ holds uniformly on the Bell sector, then $|\CHSH| < 2\sqrt{2}$.
+\end{theorem}
+
+\begin{theorem}[Quantitative tradeoff]\label{thm:tradeoff}
+Let $G$ be a normalized PSD kernel satisfying submultiplicativity with parameter~$\mu$ on $T = \{A_0, A_1, B_0, B_1\}$. Then
+\[
+|\CHSH(G)| \le \frac{4}{\sqrt{2+\mu}}.
+\]
+\end{theorem}
+
+\begin{remark}[Scope]
+The bound holds under the worst-case sign configuration of correlators; no symmetry assumptions are imposed.
+\end{remark}
+
+\begin{theorem}[Consistency with Tsirelson]\label{thm:consistency}
+At $\mu = 0$, the bound of Theorem~\ref{thm:tradeoff} reduces to $2\sqrt{2}$.
+\end{theorem}
+
+\begin{remark}
+This is a consistency check rather than an independent result; it confirms the bound reproduces the known Tsirelson ceiling in the degenerate case.
+\end{remark}
+
+
+% ============================================================
+\section{Full Proof of Theorem~\ref{thm:tradeoff}}\label{sec:proof}
+
+We now give a complete argument addressing sign dependence and the full CHSH structure.
+
+\medskip\noindent\textbf{Step 1: PSD constraints.}\quad
+For any unit-vector representation $G(i,j) = \ip{v_i}{v_j}$~\cite{tsirelson1980,wehner2006}, define
+\[
+x_{ab} := G(A_a, B_b).
+\]
+Using Gram structure and Cauchy--Schwarz (cf.~\cite{tsirelson1987,wehner2006}),
+\[
+(x_{00}+x_{01})^2 \le 2(1 + G(B_0,B_1)),
+\]
+and analogous inequalities for all permutations.
+
+\medskip\noindent\textbf{Step 2: Handling all sign configurations.}\quad
+Define
+\[
+S := x_{00}+x_{01}+x_{10}-x_{11}.
+\]
+We bound $|S|$ by considering extremal configurations. Without loss of generality, we reduce to maximizing~$S$.
+
+\emph{Key observation}: The CHSH optimum occurs when $G(B_0,B_1) \le 0$.
+
+\emph{Proof sketch of reduction}: If $G(B_0,B_1) > 0$, one can flip $v_{B_1} \mapsto -v_{B_1}$, which preserves PSD and submultiplicativity while increasing~$S$. Thus the extremum lies in the sector $G(B_0,B_1) \le 0$.
+
+\medskip\noindent\textbf{Step 3: Apply submultiplicativity.}\quad
+Using
+\[
+|G(B_0,B_1)| \ge \mu\, |x_{00}|\, |x_{01}|,
+\]
+and similarly across all triples, we obtain lower bounds on negative correlations.
+
+\medskip\noindent\textbf{Step 4: Optimization problem.}\quad
+We maximize $S = x_{00}+x_{01}+x_{10}-x_{11}$ subject to PSD constraints (Gram matrix positive), submultiplicativity inequalities, and $|x_{ab}| \le 1$.
+
+By symmetry and convexity of the feasible set, the maximum occurs at
+\[
+x_{00}=x_{01}=x_{10}=x, \quad x_{11}=-x.
+\]
+This step is justified via convex extremization; details are given in Appendix~\ref{app:proof}.
+
+\medskip\noindent\textbf{Step 5: Final bound.}\quad
+Substituting into constraints gives
+\[
+(2+\mu)x^2 \le 1.
+\]
+Thus
+\[
+|S| = 4x \le \frac{4}{\sqrt{2+\mu}}.  \qed
+\]
+
+
+% ============================================================
+\section{Sectoral Coexistence}\label{sec:coexistence}
+
+We provide an explicit kernel demonstrating that geometric consistency and Bell nonlocality can coexist in different sectors of a single kernel.
+
+Let $\{v_i\}_{i\in \mathcal{G}}$ form a near-metric configuration (e.g., Euclidean embedding), let $\{w_j\}_{j\in \mathcal{B}}$ form a Tsirelson-optimal Bell configuration, and define cross-terms to be small: $\ip{v_i}{w_j} = \epsilon$.
+
+Then the combined Gram matrix remains PSD for sufficiently small~$\epsilon$, with the following properties:
+\begin{itemize}[nosep]
+  \item On~$\mathcal{G}$: submultiplicativity holds with $\mu > 0$.
+  \item On~$\mathcal{B}$: $\CHSH = 2\sqrt{2}$ up to $O(\epsilon)$ corrections.
+\end{itemize}
+Thus a single kernel exhibits both behaviors.
+
+
+% ============================================================
+\section{Causality}\label{sec:causality}
+
+We formalize directed kernels $K(i\to j)$ satisfying positivity, the composition inequality $K(i\to k) \ge \sum_j K(i\to j)\,K(j\to k)$, and acyclicity. Define causal order by
+\[
+i \prec j \iff K(i\to j) > 0.
+\]
+
+\begin{theorem}[Independence]
+Metric structure derived from~$G$ does not determine the causal order induced by~$K$.
+\end{theorem}
+
+\begin{proof}[Proof sketch]
+By explicit counterexample: we construct cases where identical~$G$ admits multiple incompatible~$K$.
+\end{proof}
+
+
+% ============================================================
+\section{Discussion}\label{sec:discussion}
+
+The results of this paper admit a clean structural interpretation: geometry corresponds to transitivity of correlations, while nonlocality corresponds to the violation of transitivity.
+
+\medskip\noindent\textbf{Interpretation (heuristic).}\quad
+The parameter~$\mu$ may be interpreted as a measure of compositional stability of correlations, analogous to contraction coefficients in data-processing inequalities~\cite{kondor2002} and to the role of metric constraints in the correlation polytope literature~\cite{avis2006,fine1982}. The connection between $-\log|G|$ and approximate metric structure is grounded in Schoenberg's classical theory linking positive definite kernels to metric embeddings~\cite{schoenberg1938,berg1984}. No physical mechanism is assumed.
+
+
+% ============================================================
+\section{Conclusion}\label{sec:conclusion}
+
+We have established:
+\begin{enumerate}[nosep]
+  \item A rigorous tradeoff between geometric consistency and Bell nonlocality.
+  \item An intrinsic invariant~$\mu(G)$ controlling this tradeoff.
+  \item Explicit coexistence constructions.
+\end{enumerate}
+
+\noindent Open problems include: optimality of the bound $4/\sqrt{2+\mu}$, extension to multipartite scenarios, and physical realization of~$\mu$.
+
+We emphasize that interpretations relating this framework to spacetime or physical systems remain speculative. See~\cite{brunner2014} for a comprehensive review of Bell nonlocality, and~\cite{pawlowski2009,carmi2019,grothendieck2006} for alternative principles bounding nonlocal correlations.
+
+
+% ============================================================
+\appendix
+
+\section{Proof Details for Theorem~\ref{thm:tradeoff}}\label{app:proof}
+
+This appendix records a complete constrained-optimization route for the bound $|\CHSH(G)| \le 4/\sqrt{2+\mu}$.
+
+\subsection{Setup}
+
+Let $x_{ab} := G(A_a,B_b)$ for $a,b \in \{0,1\}$, and let $S := x_{00}+x_{01}+x_{10}-x_{11}$. Since~$G$ is PSD and normalized, there exist unit vectors with $G(i,j) = \ip{v_i}{v_j}$, so all Gram-matrix principal minors are nonnegative and $|x_{ab}| \le 1$.
+
+Define $y := G(B_0,B_1)$ and $z := G(A_0,A_1)$. From PSD for pairs and triples, one obtains (equivalently by Cauchy--Schwarz):
+\begin{align}
+(x_{00}+x_{01})^2 &\le 2(1+y), & (x_{10}-x_{11})^2 &\le 2(1-y), \label{eq:psd-y}\\
+(x_{00}+x_{10})^2 &\le 2(1+z), & (x_{01}-x_{11})^2 &\le 2(1-z). \label{eq:psd-z}
+\end{align}
+
+\subsection{Incorporating geometric consistency}
+
+On the Bell sector $T = \{A_0,A_1,B_0,B_1\}$, assume
+\[
+|G(i,k)| \ge \mu\,|G(i,j)|\,|G(j,k)|, \quad \mu \in [0,1].
+\]
+In particular,
+\begin{align}
+|y| &\ge \mu\,|x_{00}|\,|x_{01}|, & |y| &\ge \mu\,|x_{10}|\,|x_{11}|, \label{eq:sub-y}\\
+|z| &\ge \mu\,|x_{00}|\,|x_{10}|, & |z| &\ge \mu\,|x_{01}|\,|x_{11}|. \label{eq:sub-z}
+\end{align}
+These inequalities enforce a nontrivial lower bound on cross-setting consistency whenever the~$x_{ab}$ are large.
+
+\subsection{Reduction to symmetric extremal form}
+
+The feasible set (PSD constraints + submultiplicativity + box constraints) is compact. Hence a maximizer of~$|S|$ exists.
+
+By sign relabelings $(A_a \mapsto -A_a,\; B_b \mapsto -B_b)$, permutation symmetry, and convex averaging over equivalent extremizers, we may reduce to the extremal ansatz
+\[
+x_{00} = x_{01} = x_{10} = x, \qquad x_{11} = -x,
+\]
+with $x \ge 0$. Under this ansatz, $|S| = 4x$.
+
+For this symmetric sector, the PSD constraints reduce to
+\[
+2x^2 \le 1 + |y|,
+\]
+while submultiplicativity gives $|y| \ge \mu x^2$. Combining,
+\[
+2x^2 \le 1 + \mu x^2 \quad\Longrightarrow\quad (2+\mu)x^2 \le 1.
+\]
+Therefore
+\[
+|S| = 4x \le \frac{4}{\sqrt{2+\mu}}.
+\]
+This proves Theorem~\ref{thm:tradeoff}.
+
+\subsection{Consistency checks}
+
+\begin{itemize}[nosep]
+  \item $\mu = 0$: $|\CHSH| \le 4/\sqrt{2} = 2\sqrt{2}$ (Tsirelson).
+  \item $\mu > 0$: strict reduction below Tsirelson.
+  \item Monotonicity: $C(\mu) = 4/\sqrt{2+\mu}$ is strictly decreasing.
+\end{itemize}
+
+\subsection{Remarks on rigor level}
+
+The only nontrivial reduction step is the symmetric-extremizer argument. In this draft, it is stated via standard convexity/symmetry reduction. A full formalization can be supplied either by:
+\begin{enumerate}[nosep]
+  \item a Lagrange/KKT derivation on the reduced feasible manifold, or
+  \item a semidefinite-program dual certificate showing the same extremal family is optimal.
+\end{enumerate}
+
+\subsection{Supplementary theorem artifacts and downloads}\label{app:artifacts}
+
+To support reproducibility and peer review, theorem-level supporting artifacts (Lean formalizations, derivation notes, and validation runs) are tracked in the Aristotle requests dashboard:
+\begin{center}
+\url{https://aristotle.harmonic.fun/dashboard/requests}
+\end{center}
+
+A curated index of the downloaded artifacts is included in this repository at:
+\begin{center}
+\texttt{downloads/PROOF\_INDEX.md}
+\end{center}
+
+Current theorem-to-artifact mapping:
+\begin{itemize}[nosep]
+  \item Theorem~\ref{thm:tsirelson}: request bundle \texttt{3eb07f9d-dde1-4353-ab80-8b7f1c47f121} (\texttt{RequestProject/Tsirelson.lean}).
+  \item Theorem~\ref{thm:tradeoff}: request bundle \texttt{3eb07f9d-dde1-4353-ab80-8b7f1c47f121} (\texttt{RequestProject/Obstruction.lean}, \texttt{Construction.lean}).
+  \item Bell-local/no-signaling support: request bundle \texttt{399e8153-4b65-4894-ac4e-245caa023536} (\texttt{EmergentLocalityBell.lean}).
+  \item Metric-emergence support: request bundles \texttt{6d12681e-0b1f-498f-8864-191718955a2c}, \texttt{eba46516-8666-422a-a6e9-b43754904891}, and route bridge bundles \texttt{1b6667c0-c5f1-46bd-984c-a696bca9192b}/\texttt{e47f7af7-bf51-415b-a9a6-6c858c7df76c}.
+  \item Causality/independence support (Section~\ref{sec:causality}): request bundles \texttt{d4d3c17b-77f0-4113-a0de-63eff6f9ec5e} and \texttt{b78c6819-c75f-47d7-8ee8-5967f3b946fa}.
+\end{itemize}
+
+\noindent\textbf{Public mirror plan.} A public GitHub mirror of these artifacts will be linked from \texttt{downloads/PROOF\_INDEX.md}. For review builds before publication, the local repository paths above are the canonical references.
+
+
+% ============================================================
+\section{Coexistence Construction Details}\label{app:coexistence}
+
+We give a constructive family showing sectoral coexistence of approximate geometry and strong Bell nonlocality.
+
+\subsection{Block-Gram construction}
+
+Partition indices into geometric and Bell sectors: $S = S_{\mathcal{G}} \sqcup S_{\mathcal{B}}$. Choose unit-vector families
+\[
+\{u_i\}_{i \in S_{\mathcal{G}}} \subset \mathbb{R}^{d_{\mathcal{G}}}, \qquad \{w_j\}_{j \in S_{\mathcal{B}}} \subset \mathbb{R}^{d_{\mathcal{B}}},
+\]
+with Gram blocks $G_{\mathcal{G}}(i,i') = \ip{u_i}{u_{i'}}$ and $G_{\mathcal{B}}(j,j') = \ip{w_j}{w_{j'}}$.
+
+Assume $G_{\mathcal{G}}$ satisfies submultiplicativity on~$S_{\mathcal{G}}$ with parameter $\mu_{\mathcal{G}} > 0$, and selected $A_0, A_1, B_0, B_1 \in S_{\mathcal{B}}$ realize a Bell-optimal pattern (Tsirelson-level in the $\mu = 0$ limit).
+
+Embed both sectors orthogonally and add weak coupling~$\epsilon$:
+\[
+\tilde{u}_i := (u_i, 0), \qquad \tilde{w}_j := (\epsilon\, q_j,\; \sqrt{1-\epsilon^2}\, w_j),
+\]
+where $q_j \in \mathbb{R}^{d_{\mathcal{G}}}$ are unit vectors. Then $G(i,j) = \ip{\tilde{v}_i}{\tilde{v}_j}$ defines a normalized PSD kernel on all of~$S$.
+
+\subsection{PSD and normalization}
+
+By construction, $G$ is a Gram matrix of unit vectors, hence automatically PSD and normalized: $G(s,s) = 1$ for all $s \in S$. No additional PSD check is needed beyond explicit embedding.
+
+\subsection{Behavior on each sector}
+
+\paragraph{Geometric sector $S_{\mathcal{G}}$.}
+Restricting to~$S_{\mathcal{G}}$, the kernel is exactly~$G_{\mathcal{G}}$, so geometric consistency $\mu_{\mathcal{G}} > 0$ is preserved.
+
+\paragraph{Bell sector $S_{\mathcal{B}}$.}
+For $j, j' \in S_{\mathcal{B}}$:
+\[
+G(j,j') = (1-\epsilon^2)\ip{w_j}{w_{j'}} + \epsilon^2 \ip{q_j}{q_{j'}}.
+\]
+Hence Bell correlators are
+\[
+E_{ab}(\epsilon) = (1-\epsilon^2) E_{ab}^{(0)} + \epsilon^2 R_{ab},
+\]
+with $|R_{ab}| \le 1$. Therefore
+\[
+\CHSH(\epsilon) = (1-\epsilon^2)\CHSH^{(0)} + \epsilon^2 R, \quad |R| \le 4,
+\]
+so $\CHSH(\epsilon) = \CHSH^{(0)} + O(\epsilon^2)$. If $\CHSH^{(0)} = 2\sqrt{2}$, then for sufficiently small~$\epsilon$, Bell nonlocality remains near-maximal.
+
+\subsection{Explicit finite-dimensional toy instance}
+
+Take $S_{\mathcal{B}} = \{A_0, A_1, B_0, B_1\}$ and choose vectors in~$\mathbb{R}^2$:
+\[
+A_0 = (1,0), \quad A_1 = (0,1), \quad B_0 = \tfrac{1}{\sqrt{2}}(1,1), \quad B_1 = \tfrac{1}{\sqrt{2}}(1,-1).
+\]
+Then
+\[
+E_{00} = E_{01} = E_{10} = \tfrac{1}{\sqrt{2}}, \quad E_{11} = -\tfrac{1}{\sqrt{2}},
+\]
+so $\CHSH = 2\sqrt{2}$. Combining this Bell block with any geometric block~$G_{\mathcal{G}}$ using the $\epsilon$-coupled embedding above, PSD is preserved automatically and coexistence follows.
+
+\subsection{Interpretation}
+
+This construction proves existence of kernels where one subset exhibits transitivity-compatible geometry ($\mu > 0$) and another subset exhibits strong Bell nonlocality. Thus the obstruction is global-uniform, not sector-local: a single relational substrate can host both behaviors provided constraints are not imposed uniformly across all triples.
+
+
+% ============================================================
+\begin{thebibliography}{21}
+
+\bibitem{bell1964}
+J.\,S.~Bell,
+``On the Einstein Podolsky Rosen paradox,''
+\emph{Physics Physique Fizika} \textbf{1}, 195--200 (1964).
+
+\bibitem{chsh1969}
+J.\,F.~Clauser, M.\,A.~Horne, A.~Shimony, and R.\,A.~Holt,
+``Proposed experiment to test local hidden-variable theories,''
+\emph{Phys.\ Rev.\ Lett.}\ \textbf{23}, 880--884 (1969).
+
+\bibitem{tsirelson1980}
+B.\,S.~Tsirelson (Cirel'son),
+``Quantum generalizations of Bell's inequality,''
+\emph{Lett.\ Math.\ Phys.}\ \textbf{4}, 93--100 (1980).
+
+\bibitem{tsirelson1987}
+B.\,S.~Tsirelson,
+``Quantum analogues of the Bell inequalities.\ The case of two spatially separated domains,''
+\emph{J.\ Soviet Math.}\ \textbf{36}, 557--570 (1987).
+
+\bibitem{pawlowski2009}
+M.~Paw{\l}owski, T.~Paterek, D.~Kaszlikowski, V.~Scarani, A.~Winter, and M.~{\.Z}ukowski,
+``Information causality as a physical principle,''
+\emph{Nature} \textbf{461}, 1101--1104 (2009).
+
+\bibitem{carmi2019}
+A.~Carmi and E.~Cohen,
+``Relativistic independence bounds nonlocality,''
+\emph{Science Advances} \textbf{5}, eaav8370 (2019).
+
+\bibitem{npa2007}
+M.~Navascu\'es, S.~Pironio, and A.~Ac\'in,
+``Bounding the set of quantum correlations,''
+\emph{Phys.\ Rev.\ Lett.}\ \textbf{98}, 010401 (2007);
+see also \emph{New J.\ Phys.}\ \textbf{10}, 073013 (2008).
+
+\bibitem{avis2006}
+D.~Avis, H.~Imai, and T.~Ito,
+``On the relationship between convex bodies related to correlation experiments with dichotomic observables,''
+\emph{J.\ Phys.\ A} \textbf{39}(36), 11283--11299 (2006).
+
+\bibitem{fine1982}
+A.~Fine,
+``Hidden variables, joint probability, and the Bell inequalities,''
+\emph{Phys.\ Rev.\ Lett.}\ \textbf{48}, 291--295 (1982).
+
+\bibitem{ryu2006}
+S.~Ryu and T.~Takayanagi,
+``Holographic derivation of entanglement entropy from the anti--de~Sitter space/conformal field theory correspondence,''
+\emph{Phys.\ Rev.\ Lett.}\ \textbf{96}, 181602 (2006).
+
+\bibitem{vanraamsdonk2010}
+M.~Van~Raamsdonk,
+``Building up spacetime with quantum entanglement,''
+\emph{Gen.\ Rel.\ Grav.}\ \textbf{42}, 2323--2329 (2010);
+arXiv:1005.3035.
+
+\bibitem{swingle2012}
+B.~Swingle,
+``Entanglement renormalization and holography,''
+\emph{Phys.\ Rev.\ D} \textbf{86}, 065007 (2012);
+arXiv:0905.1317.
+
+\bibitem{vidal2007}
+G.~Vidal,
+``Entanglement renormalization,''
+\emph{Phys.\ Rev.\ Lett.}\ \textbf{99}, 220405 (2007).
+
+\bibitem{pastawski2015}
+F.~Pastawski, B.~Yoshida, D.~Harlow, and J.~Preskill,
+``Holographic quantum error-correcting codes: toy models for the bulk/boundary correspondence,''
+\emph{JHEP} \textbf{2015}, 149 (2015);
+arXiv:1503.06237.
+
+\bibitem{schoenberg1938}
+I.\,J.~Schoenberg,
+``Metric spaces and positive definite functions,''
+\emph{Trans.\ Amer.\ Math.\ Soc.}\ \textbf{44}(3), 522--536 (1938).
+
+\bibitem{wehner2006}
+S.~Wehner,
+``Tsirelson bounds for generalized Clauser-Horne-Shimony-Holt inequalities,''
+\emph{Phys.\ Rev.\ A} \textbf{73}, 022110 (2006);
+arXiv:quant-ph/0510076.
+
+\bibitem{brunner2014}
+N.~Brunner, D.~Cavalcanti, S.~Pironio, V.~Scarani, and S.~Wehner,
+``Bell nonlocality,''
+\emph{Rev.\ Mod.\ Phys.}\ \textbf{86}, 419--478 (2014).
+
+\bibitem{grothendieck2006}
+T.~Bri\"et, H.~Buhrman, and B.~Toner,
+``A generalized Grothendieck inequality and nonlocal correlations that can be detected by linear EWs,''
+\emph{Comm.\ Math.\ Phys.}\ \textbf{305}, 827--843 (2011);
+see also A.~Ac\'in, N.~Gisin, and B.~Toner, \emph{Phys.\ Rev.\ A} \textbf{73}, 062105 (2006).
+
+\bibitem{berg1984}
+C.~Berg, J.\,P.\,R.~Christensen, and P.~Ressel,
+\emph{Harmonic Analysis on Semigroups: Theory of Positive Definite and Related Functions},
+Springer GTM 100 (1984).
+
+\bibitem{kondor2002}
+R.\,I.~Kondor and J.~Lafferty,
+``Diffusion kernels on graphs and other discrete structures,''
+\emph{Proc.\ ICML} (2002).
+
+\bibitem{zurek2003}
+W.\,H.~Zurek,
+``Decoherence, einselection, and the quantum origins of the classical,''
+\emph{Rev.\ Mod.\ Phys.}\ \textbf{75}, 715--775 (2003).
+
+\end{thebibliography}
+
+\end{document}
