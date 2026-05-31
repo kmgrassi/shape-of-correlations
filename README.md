@@ -3,7 +3,7 @@
 This repository contains a curated subset of artifacts for the relational-kernel paper:
 
 - `paper.tex` (source manuscript)
-- `paper.pdf` / `paper-draft.pdf` (compiled drafts when available)
+- `paper.md` / `paper-draft.pdf` *(March draft)*
 - `data/PROOF_INDEX.md` (mapping from claims to theorem artifacts)
 - `data/theorems/` (downloaded Aristotle theorem bundles and Lean proof projects)
 
